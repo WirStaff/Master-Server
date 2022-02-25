@@ -23,17 +23,14 @@ export class Servers {
   }
 
   public async reply(server: string, address?: string): Promise<number[]> {
-    if (server === '0.0.0.0:0') {
-      await this.http.sendStats(address);
-      return this.rangeServers(0);
+    let index = 0;
 
+    if (server == '0.0.0.0:0') {
+      await this.http.sendStats(address);
     } else {
       const lastAddress = transformUtil(server);
 
-      let success = 0;
-      let index = 0;
-
-      for (let i = 0; i < this.servers.length; i++) {
+      for (let i = 0, success = 0, stop = false; i < this.servers.length; i++) {
         if (this.servers[i] == lastAddress[0] && !success) {
           for (let j = 0; j < lastAddress.length; j++) {
             if (this.servers[i + j] == lastAddress[j]) {
@@ -41,6 +38,7 @@ export class Servers {
 
               if (success == lastAddress.length) {
                 index = i + j + 1;
+                stop = true;
                 break;
               }
             } else {
@@ -48,10 +46,14 @@ export class Servers {
             }
           }
         }
-      }
 
-      return this.rangeServers(index);
+        if (stop) {
+          break;
+        }
+      }
     }
+
+    return this.rangeServers(index);
   }
 
   private async uploadServers(): Promise<void> {

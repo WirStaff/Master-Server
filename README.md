@@ -1,4 +1,4 @@
-#Master Server
+# Master Server
 
 This application was created based on this [article](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol)
 
